@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div>hello socket</div>
+    <input type="text" id="msg">
+    <input type="button" id="btn" value="버튼">
+
+    <div id="content"></div>
+
+    <!-- 웹소켓 요청을 위해 필요한 라이브러리, 여기까지가 세팅 -->
+    <script type="text/javascript" src="/socket.io.js"></script>
+    <script type="text/javascript">
+        // socket.io를 불러왔기 때문에 io() 메서드 사용 가능
+        let socket = io();
+
+        socket.on('connect', ()=>{  // 클라이언트에서 연결은 connect, io.sockets.on()에 접속 요청
+            const msg = document.querySelector('#msg'); // 요청해서 받은 응답을 받는 과정으로 접속 완료..?
+            msg.value = '접속 완료';
+        }) 
+        const btn = document.querySelector('#btn');
+        btn.addEventListener('click', ()=>{
+            const msg = document.querySelector('#msg');
+            socket.emit('send', {msg:msg.value}) // meit('send') -> 요청을 보낸다, server의 socket.on(data)의 data로
+        })      // server쪽에서 emit을 사용하면 연결된 다른 client에게 메시지를 전달 가능
+
+            const content = document.querySelector('#content');
+            
+            content.innerHTML += `내가 쓴 글 ${msg.value} <br />`
+
+
+        socket.on('call', (data)=>{
+            const content = document.querySelector('#content');
+            content.innerHTML += `다른 사람의 글 ${data} <br />`
+            // 서버에서 보낸 data.msg를 data라는 변수로 받아서 innerHTML로 등록
+        })
+    </script>
+</body>
+</html>
